@@ -21,6 +21,7 @@ class HBNBCommand(cmd.Cmd):
             if line not in storage.classes():
                 print("** class doesn't exist **")
             else:
+                # create an instance of the given class
                 obj_intance = storage.classes()[line]()
                 obj_intance.save()
                 print(obj_intance.id)
@@ -137,6 +138,24 @@ class HBNBCommand(cmd.Cmd):
 
     def emptyline(self):
         pass
+    
+    #  for testing purposes
+    def onecmd(self, line):
+        if "." in line:
+            class_name, command = line.split(".")
+            command = command.replace("(", "").replace(")", "")
+            line = f"{command} {class_name}"
+        return cmd.Cmd.onecmd(self, line)
+        # print(line)
+
+    def do_count(self, line):
+        # line => User
+        count = 0
+        for key in storage.all().keys():
+            class_name, instance_id = key.split(".")
+            if line == class_name:
+                count += 1
+        print(count)
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()
