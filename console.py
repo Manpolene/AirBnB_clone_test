@@ -7,7 +7,7 @@ from models.base_model import BaseModel
 
 class HBNBCommand(cmd.Cmd):
     prompt = "(hbnb)"
-    classes_list = ["BaseModel"]
+    classes_list = ["BaseModel", "User"]
 
     def do_EOF(self, *args):
         '''End of file command to exit the program'''
@@ -119,17 +119,37 @@ class HBNBCommand(cmd.Cmd):
             print(instance_list)
 
     def do_update(self, line):
-        (class_name, instance_id, attribute, value) = line.split(" ")
-        print(class_name, instance_id, attribute, value)
-
-        key = f"{class_name}.{instance_id}"
-        if key not in storage.all():
-            print("** no instance found **")
-        else:
-            instance_dict = storage.all()[key]
-            # update attributes in the instance dictionary
-            instance_dict[attribute] = value
-            storage.save()
+        args = line.split(" ")
+        if line == "" or line is None:
+            print("** class name missing **")
+            return
+        if len(args) == 1:
+            print("** instance id missing **")
+            return
+        if len(args) == 2:
+            print("** attribute name missing **")
+            return
+        if len(args) == 3:
+            print("** value missing **")
+            return
+        if len(args) > 3:
+            (class_name, instance_id, attribute, value) = line.split(" ")
+            # print(class_name, instance_id, attribute, value)
+            #  check if class exists
+            if class_name not in self.classes_list:
+                print("** class doesn't exist **")
+            else:
+                key = f"{class_name}.{instance_id}"
+                if key not in storage.all():
+                    print("** no instance found **")
+                else:
+                    instance_dict = storage.all()[key]
+                    # remove quotation marks on value
+                    value = value.replace('"', '')
+                    # update attributes in the instance dictionary
+                    instance_dict[attribute] = type(attribute)(value)
+                    print(type(attribute), type(value))
+                    storage.save()
 
     def emptyline(self):
         pass

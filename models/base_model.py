@@ -2,7 +2,7 @@
 """This script is the base model"""
 import uuid
 import datetime
-from models.__init__ import storage
+from models import storage
 
 
 class BaseModel():
@@ -31,7 +31,7 @@ class BaseModel():
 
     def __str__(self):
         '''Returns official string representation'''
-        return (f"[{__class__.__name__}] ({self.id}) {str(self.__dict__)}")
+        return (f"[{self.__class__.__name__}] ({self.id}) {str(self.__dict__)}")
 
     def save(self):
         '''updates the public instance attribute updated_at'''
@@ -46,7 +46,7 @@ class BaseModel():
                 object_dict[key] = self.__dict__[key]
             else:
                 object_dict[key] = datetime.datetime.isoformat(self.__dict__[key])
-        object_dict['__class__'] = __class__.__name__
+        object_dict['__class__'] = self.__class__.__name__
         return (object_dict)
 
 # dictionary = {'id': '391cd1f2-4d26-4845-8eff-8169b340e801', 'created_at': '2022-10-25T11:14:48.821221', 'updated_at': '2022-10-25T11:14:48.821234', 'name': 'My_First_Model', 'my_number': 89, '__class__': 'BaseModel'}
