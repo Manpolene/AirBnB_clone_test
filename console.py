@@ -3,6 +3,7 @@
 import cmd
 from models import storage
 from models import *
+import re
 
 class HBNBCommand(cmd.Cmd):
     prompt = "(hbnb)"
@@ -54,7 +55,7 @@ class HBNBCommand(cmd.Cmd):
                 else:
                     print("** class doesn't exist **")
 
-    def do_delete(self, line):
+    def do_destroy(self, line):
         # check if class name and instance id was provided
         if line == "" or line is None:
             print("** class name missing **")
@@ -130,23 +131,38 @@ class HBNBCommand(cmd.Cmd):
                 else:
                     instance_dict = storage.all()[key]
                     # remove quotation marks on value
-                    value = value.replace('"', '')
+                    if '"' in value:
+                        value = value.replace('"', '')
                     # update attributes in the instance dictionary
-                    instance_dict[attribute] = type(attribute)(value)
-                    print(type(attribute), type(value))
+                    value = type(attribute)(value)
+                    setattr(instance_dict, attribute, value)
+                    # instance_dict[attribute] = value
+                    # print(attribute, value)
+                    # print(type(attribute), type(value))
                     storage.save()
 
     def emptyline(self):
         pass
     
-    #  for testing purposes
     def onecmd(self, line):
-        if "." in line:
-            class_name, command = line.split(".")
-            command = command.replace("(", "").replace(")", "")
-            line = f"{command} {class_name}"
-        return cmd.Cmd.onecmd(self, line)
-        # print(line)
+        # check if this line matches the given pattern
+        if re.match(r"^(\w+)\.(\w+)\(:?.*\)$", line):
+            # print("There was a match")
+            # let's break line into class name and command_line
+            line = re.split(r"^(\w+)\.(\w+\(.*\))$", line)
+            class_name, command_line = line[1], line[2]
+            # print(class_name, command_line)
+
+            #  check what type of command was passed
+            if command_line[:3] == "all" or command_line[:5] == "count":
+                command = command_line.replace("(", "").replace(")", "")
+                line = f"{command} {class_name}"
+                # print(line)
+            return cmd.Cmd.onecmd(self, line)
+        else:
+            # return the default onecmd implementation
+            return cmd.Cmd.onecmd(self, line)
+            # print("There was no match")
 
     def do_count(self, line):
         # line => User
