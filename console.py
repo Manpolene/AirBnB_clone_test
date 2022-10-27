@@ -158,6 +158,14 @@ class HBNBCommand(cmd.Cmd):
                 command = command_line.replace("(", "").replace(")", "")
                 line = f"{command} {class_name}"
                 # print(line)
+            elif command_line[:4] == "show" or command_line[:7] == "destroy":
+                # replace (" and ") from the command
+                command = command_line.replace('("', ' ').replace('")', '')
+                #  split the above command into the command and the id
+                command, instance_id = command.split(" ")
+                #  generate the actual line (command class_name id)
+                line = f"{command} {class_name} {instance_id}"
+
             return cmd.Cmd.onecmd(self, line)
         else:
             # return the default onecmd implementation
