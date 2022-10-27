@@ -3,11 +3,9 @@
 import cmd
 from models import storage
 from models import *
-from models.base_model import BaseModel
 
 class HBNBCommand(cmd.Cmd):
     prompt = "(hbnb)"
-    classes_list = ["BaseModel", "User"]
 
     def do_EOF(self, *args):
         '''End of file command to exit the program'''
@@ -17,16 +15,15 @@ class HBNBCommand(cmd.Cmd):
         '''Quit command to exit the program'''
         quit()
     
-    def do_create(self, class_name):
+    def do_create(self, line):
         '''Create a new instance called <name>'''
-        if class_name:
-            if class_name in self.classes_list:
-                class_instance = eval(class_name)()
-                class_instance.save()
-                object_dict = class_instance.__dict__
-                print(object_dict['id'])
-            else:
+        if line != "" or line is not None:
+            if line not in storage.classes():
                 print("** class doesn't exist **")
+            else:
+                obj_intance = storage.classes()[line]()
+                obj_intance.save()
+                print(obj_intance.id)
         else:
             print("** class name missing **")
     
@@ -44,15 +41,14 @@ class HBNBCommand(cmd.Cmd):
                 class_name = class_info[0]
                 instance_id = class_info[1]
                 # check if class name exists
-                if class_name in self.classes_list:
+                if class_name in storage.classes():
                     # check if instance_id exists
                     key = f"{class_name}.{instance_id}"
                     if key not in storage.all():
                         print("** no instance found **")
                     else:
                         instance_dict = storage.all()[key]
-                        # print the str representation of the instance
-                        print(f"[{class_name}] ({instance_id}) {str(instance_dict)}")
+                        print(instance_dict)
                     
                 else:
                     print("** class doesn't exist **")
@@ -71,7 +67,7 @@ class HBNBCommand(cmd.Cmd):
                 class_name = class_info[0]
                 instance_id = class_info[1]
                 # check if class name exists
-                if class_name in self.classes_list:
+                if class_name in storage.classes():
                     # check if instance_id exists
                     key = f"{class_name}.{instance_id}"
                     if key not in storage.all():
@@ -90,33 +86,21 @@ class HBNBCommand(cmd.Cmd):
         instance_obj = storage.all()
         instance_list = []
         
-        if line:
-                if line not in self.classes_list:
-                    print("** class doesn't exist **")
-                    return
-                else:
-                    for key in instance_obj.keys():
-                         # split key into class name and instance id
-                        class_name, instance_id = key.split(".")
-                        if line == class_name:
-                            instance_dict = instance_obj[key]
-                            # # print the str representation of the instance
-                            instance_list.append(str(f"[{class_name}] ({instance_id}) {str(instance_dict)}"))
-                            print(instance_list)
-                            
-        else:
-            # grab each intance and format for printing
-            for key in instance_obj.keys():
-                #  check if class was provided
-                # if line is not "" or line is not None:
-
-                # split key into class name and instance id
-                class_name, instance_id = key.split(".")
-                # print(class_name, instance_id)
-                instance_dict = instance_obj[key]
-                # # print the str representation of the instance
-                instance_list.append(str(f"[{class_name}] ({instance_id}) {str(instance_dict)}"))
+        if line == "" or line is None:
+            for key, value in storage.all().items():
+                instance_list.append(str(value))
             print(instance_list)
+
+        else:
+            if line not in storage.classes():
+                print("** class doesn't exist **")
+                return
+            else:
+                for key, value in storage.all().items():
+                    class_name, instance_id = key.split(".")
+                    if line == class_name:
+                        instance_list.append(str(value))
+                print(instance_list)
 
     def do_update(self, line):
         args = line.split(" ")
@@ -136,7 +120,7 @@ class HBNBCommand(cmd.Cmd):
             (class_name, instance_id, attribute, value) = line.split(" ")
             # print(class_name, instance_id, attribute, value)
             #  check if class exists
-            if class_name not in self.classes_list:
+            if class_name not in storage.classes():
                 print("** class doesn't exist **")
             else:
                 key = f"{class_name}.{instance_id}"
