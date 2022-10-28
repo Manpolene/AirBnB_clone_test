@@ -165,6 +165,12 @@ class HBNBCommand(cmd.Cmd):
                 command, instance_id = command.split(" ")
                 #  generate the actual line (command class_name id)
                 line = f"{command} {class_name} {instance_id}"
+            elif command_line[:6] == "update":
+                # which update format was used
+                if re.match(r"^(\w+\(.*\{.*\}\))$", command_line):
+                    #  using the dictionary format
+                else:
+                    
 
             return cmd.Cmd.onecmd(self, line)
         else:
