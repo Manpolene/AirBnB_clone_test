@@ -4,6 +4,7 @@ import cmd
 from models import storage
 from models import *
 import re
+import sys
 
 class HBNBCommand(cmd.Cmd):
     prompt = "(hbnb)"
@@ -141,42 +142,20 @@ class HBNBCommand(cmd.Cmd):
                     # print(type(attribute), type(value))
                     storage.save()
 
+    def update_dict(line):
+        #  command class_name id {dict}
+        # use set attribute
+        # for key, value in dict.items:
+        #     value = type(key)(value)
+        #     setattr(instance_dict, key, value)
+        pass
+
     def emptyline(self):
         pass
     
-    def onecmd(self, line):
-        # check if this line matches the given pattern
-        if re.match(r"^(\w+)\.(\w+)\(:?.*\)$", line):
-            # print("There was a match")
-            # let's break line into class name and command_line
-            line = re.split(r"^(\w+)\.(\w+\(.*\))$", line)
-            class_name, command_line = line[1], line[2]
-            # print(class_name, command_line)
-
-            #  check what type of command was passed
-            if command_line[:3] == "all" or command_line[:5] == "count":
-                command = command_line.replace("(", "").replace(")", "")
-                line = f"{command} {class_name}"
-                # print(line)
-            elif command_line[:4] == "show" or command_line[:7] == "destroy":
-                # replace (" and ") from the command
-                command = command_line.replace('("', ' ').replace('")', '')
-                #  split the above command into the command and the id
-                command, instance_id = command.split(" ")
-                #  generate the actual line (command class_name id)
-                line = f"{command} {class_name} {instance_id}"
-            elif command_line[:6] == "update":
-                # which update format was used
-                if re.match(r"^(\w+\(.*\{.*\}\))$", command_line):
-                    #  using the dictionary format
-                else:
-                    
-
-            return cmd.Cmd.onecmd(self, line)
-        else:
-            # return the default onecmd implementation
-            return cmd.Cmd.onecmd(self, line)
-            # print("There was no match")
+    def precmd(self, line):
+        if not sys.stdin.isatty():
+            print()
 
     def do_count(self, line):
         # line => User
