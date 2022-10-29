@@ -5,11 +5,12 @@ import os
 import datetime
 
 class FileStorage():
+    """Class for storing and retrieving data"""
     __file_path = "file.json"
     __objects = {}
 
-    def __init__(self):
-        pass
+    # def __init__(self):
+    #     pass
 
     def all(self):
         '''returns the dictionary __objects'''
@@ -58,6 +59,7 @@ class FileStorage():
 
 
     def reload(self):
+        """Reloads the stored objects"""
         if os.path.exists(FileStorage.__file_path):
             #  load the file and dump content as dictionary
             with open(FileStorage.__file_path, "r", encoding="utf-8") as my_file:
