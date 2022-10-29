@@ -13,17 +13,23 @@ class HBNBCommand(cmd.Cmd):
     prompt = "(hbnb)"
 
     def do_EOF(self, *args):
-        '''End of file command to exit the program'''
+        '''Usage: EOF
+           Function: Exits the program
+        '''
         print()
         return True
 
     def do_quit(self, *args):
-        '''Quit command to exit the program'''
+        '''Usage: quit
+           Function: Exits the program
+        '''
         # quit()
         return True
 
     def do_create(self, line):
-        '''Create a new instance called <name>'''
+        '''Usage: 1. create <class name> | 2. <class name>.create()
+Function: Creates an instance of the class
+        '''
         if line != "" or line is not None:
             if line not in storage.classes():
                 print("** class doesn't exist **")
@@ -36,6 +42,9 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing **")
 
     def do_show(self, line):
+        '''Usage: 1. show <class name> <id> | 2. <class name>.show(<id>)
+Function: Shows the instance details of the class
+        '''
         # check if class name and instance id was provided
         if line == "" or line is None:
             print("** class name missing **")
@@ -62,6 +71,9 @@ class HBNBCommand(cmd.Cmd):
                     print("** class doesn't exist **")
 
     def do_destroy(self, line):
+        '''Usage: 1. destroy <class name> <id> | 2. <class name>.delete(<id>)
+Function: Deletes the instance  of the class
+        '''
         # check if class name and instance id was provided
         if line == "" or line is None:
             print("** class name missing **")
@@ -90,6 +102,9 @@ class HBNBCommand(cmd.Cmd):
                     print("** class doesn't exist **")
 
     def do_all(self, line):
+        '''Usage: 1. all | 2. all <class name> | 3. <class name>.all()
+Function: Prints the string representation of all instances
+        '''
         instance_obj = storage.all()
         instance_list = []
 
@@ -110,6 +125,12 @@ class HBNBCommand(cmd.Cmd):
                 print(instance_list)
 
     def do_update(self, line):
+        '''Usage: 1. update <class name> <id> <attribute> <value> | \
+2. <class name>.update(<id> <attribute> <value>) \
+3. update <clas name> <id> <dictionary> \
+4. <class name>.update(<id> <dictionary>) \
+Function: Updates the instance of the class
+        '''
         checks = re.search(r"^(\w+)\s([\S]+?)\s({.+?})$", line)
         if checks:
             # it is a dictionary
@@ -217,7 +238,9 @@ class HBNBCommand(cmd.Cmd):
         # return ''
 
     def do_count(self, line):
-        # line => User
+        '''Usage: 1. count <class name> | 2. <class name>.count()
+Function: Counts all the instances  of the class
+        '''
         count = 0
         for key in storage.all().keys():
             class_name, instance_id = key.split(".")
