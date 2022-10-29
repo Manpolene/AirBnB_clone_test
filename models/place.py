@@ -4,6 +4,7 @@ from models.base_model import BaseModel
 
 
 class Place(BaseModel):
+    '''Class for managing place objects'''
     city_id = ""
     user_id = ""
     name = ""
@@ -17,4 +18,5 @@ class Place(BaseModel):
     amenity_ids = []
 
     def __init__(self, *args, **kwargs):
+        '''Initializes attributes for the place class'''
         super().__init__(*args, **kwargs)
