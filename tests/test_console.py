@@ -8,11 +8,29 @@ from io import StringIO
 
 class Test_Console(unittest.TestCase):
     """Test the HBNBCommand Console"""
-    pass
 
+#     def test_help(self):
+#         """Tests the help commmand"""
+#         with patch('sys.stdout', new=StringIO()) as f:
+#             HBNBCommand().onecmd("help")
+#         string = """
+# Documented commands (type help <topic>):
+# ========================================
+# EOF  all  count  create  destroy  help  quit  show  update
+# """
+#         msg = f.getvalue()
+#         self.assertEqual(string, msg)
 
-# with patch('sys.stdout', new=StringIO()) as f:
-#     HBNBCommand().onecmd("help show")
+    def test_help(self):
+        """Tests the help command."""
+        with patch('sys.stdout', new=StringIO()) as f:
+            HBNBCommand().onecmd("help")
+        s = """
+Documented commands (type help <topic>):
+========================================
+EOF  all  count  create  destroy  help  quit  show  update\n
+"""
+        self.assertEqual(s, f.getvalue())
 
 
     # Test cases for quit
@@ -68,7 +86,9 @@ class Test_Console(unittest.TestCase):
     
     # Test cases for do_all
     def test_do_all(self):
-        pass
+        """Tests the do_all command"""
+        with patch('sys.stdout', new=StringIO()) as f:
+            HBNBCommand().onecmd("all")
 
     # Test cases for do_count
     # Test cases for do_show
