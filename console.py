@@ -1,10 +1,14 @@
 #!/usr/bin/python3
 '''Command Line Interpreter'''
 import cmd
+from turtle import update
+
+from click import command
 from models import storage
 from models import *
 import re
 import sys
+import json
 
 class HBNBCommand(cmd.Cmd):
     prompt = "(hbnb)"
@@ -106,56 +110,109 @@ class HBNBCommand(cmd.Cmd):
                 print(instance_list)
 
     def do_update(self, line):
-        args = line.split(" ")
-        if line == "" or line is None:
-            print("** class name missing **")
-            return
-        if len(args) == 1:
-            print("** instance id missing **")
-            return
-        if len(args) == 2:
-            print("** attribute name missing **")
-            return
-        if len(args) == 3:
-            print("** value missing **")
-            return
-        if len(args) > 3:
-            (class_name, instance_id, attribute, value) = line.split(" ")
-            # print(class_name, instance_id, attribute, value)
-            #  check if class exists
-            if class_name not in storage.classes():
-                print("** class doesn't exist **")
-            else:
-                key = f"{class_name}.{instance_id}"
-                if key not in storage.all():
-                    print("** no instance found **")
-                else:
-                    instance_dict = storage.all()[key]
-                    # remove quotation marks on value
-                    if '"' in value:
-                        value = value.replace('"', '')
-                    # update attributes in the instance dictionary
-                    value = type(attribute)(value)
-                    setattr(instance_dict, attribute, value)
-                    # instance_dict[attribute] = value
-                    # print(attribute, value)
-                    # print(type(attribute), type(value))
-                    storage.save()
+        checks = re.search(r"^(\w+)\s([\S]+?)\s({.+?})$", line)
+        if checks:
+            # it is a dictionary
+            class_name = checks.group(1)
+            instance_id = checks.group(2)
+            update_dict = checks.group(3)
 
-    def update_dict(line):
-        #  command class_name id {dict}
-        # use set attribute
-        # for key, value in dict.items:
-        #     value = type(key)(value)
-        #     setattr(instance_dict, key, value)
-        pass
+            if class_name is None:
+                print("** class name missing **")
+            elif instance_id is None:
+                print("** instance id missing **")
+            elif update_dict is None:
+                print("** attribute name missing **")
+            else:
+                if class_name not in storage.classes():
+                    print("** class doesn't exist **")
+                else:
+                    key = f"{class_name}.{instance_id}"
+                    if key not in storage.all():
+                        print("** no instance found **")
+                    else:
+                        instance_dict = storage.all()[key]
+                        update_dict = json.loads(update_dict)
+
+                        attributes = storage.attributes()[class_name]
+                        # print(attributes)
+                        for key, value in update_dict.items():
+                            if key in attributes:
+                                # print(key)
+                                value = attributes[key](value)
+                                # print(attributes[key])
+                                setattr(instance_dict, key, value)
+                                storage.save()
+
+        else:
+            # it isn't a dictionary
+            checks = re.search(r"^(\w+)\s([\S]+?)\s\"(.+?)\"\,\s\"(.+?)\"", line)
+            class_name = checks.group(1)
+            instance_id = checks.group(2)
+            attribute = checks.group(3)
+            value = checks.group(4)
+
+            if class_name is None:
+                print("** class name missing **")
+            elif instance_id is None:
+                print("** instance id missing **")
+            elif attribute is None:
+                print("** attribute name missing **")
+            elif value is None:
+                print("** value missing **")
+            else:
+                #  check if class exists
+                if class_name not in storage.classes():
+                    print("** class doesn't exist **")
+                else:
+                    key = f"{class_name}.{instance_id}"
+                    if key not in storage.all():
+                        print("** no instance found **")
+                    else:
+                        instance_dict = storage.all()[key]
+                        # print(instance_dict)
+                        attributes_dict = storage.attributes()[class_name]
+                        # update attributes in the instance dictionary
+                        # print(attributes_dict[attribute])
+                        value = attributes_dict[attribute](value) # type casting
+                        # print(attribute, value)
+                        setattr(instance_dict, attribute, value)
+                        storage.save()
 
     def emptyline(self):
         pass
     
     def precmd(self, line):
+        # make the app work non-interactively
         if not sys.stdin.isatty():
             print()
+        
+        checks = re.search(r"^(\w*)\.(\w+)(?:\(([^)]*)\))$", line)
+        if checks:
+            class_name = checks.group(1)
+            command = checks.group(2)
+            args = checks.group(3)
+
+            if args is None:
+                line = f"{command} {class_name}"
+                return ''
+            else:
+                # print(args)
+                args_checks = re.search(r"^\"([^\"]*)\"(?:, (.*))?$", args)
+                # print(args_checks.group(1), args_checks.group(2))
+                instance_id = args_checks[1]
+
+                if args_checks.group(2) is None:
+                    line = f"{command} {class_name} {instance_id}"
+                else:
+                    attribute_part = args_checks.group(2)
+                    # print(attribute_part)
+                    line = f"{command} {class_name} {instance_id} {attribute_part}"
+                # return ''
+
+                # print(line)
+        return cmd.Cmd.precmd(self, line)
+        # return ''
 
     def do_count(self, line):
         # line => User
