@@ -1,26 +1,27 @@
 #!/usr/bin/python3
 '''Command Line Interpreter'''
 import cmd
-from turtle import update
-
-from click import command
-from models import storage
-from models import *
+import json
 import re
 import sys
-import json
+
+from models import *
+from models import storage
+
 
 class HBNBCommand(cmd.Cmd):
     prompt = "(hbnb)"
 
     def do_EOF(self, *args):
         '''End of file command to exit the program'''
+        print()
         return True
 
     def do_quit(self, *args):
         '''Quit command to exit the program'''
-        quit()
-    
+        # quit()
+        return True
+
     def do_create(self, line):
         '''Create a new instance called <name>'''
         if line != "" or line is not None:
@@ -33,12 +34,12 @@ class HBNBCommand(cmd.Cmd):
                 print(obj_intance.id)
         else:
             print("** class name missing **")
-    
+
     def do_show(self, line):
         # check if class name and instance id was provided
         if line == "" or line is None:
             print("** class name missing **")
-        
+
         else:
             # get all the arguments passed via the command line
             class_info = line.split(" ")
@@ -56,7 +57,7 @@ class HBNBCommand(cmd.Cmd):
                     else:
                         instance_dict = storage.all()[key]
                         print(instance_dict)
-                    
+
                 else:
                     print("** class doesn't exist **")
 
@@ -64,7 +65,7 @@ class HBNBCommand(cmd.Cmd):
         # check if class name and instance id was provided
         if line == "" or line is None:
             print("** class name missing **")
-        
+
         else:
             # get all the arguments passed via the command line
             class_info = line.split(" ")
@@ -84,15 +85,14 @@ class HBNBCommand(cmd.Cmd):
                         del storage.all()[key]
                         storage.save()
                         return
-                        
-                    
+
                 else:
                     print("** class doesn't exist **")
 
     def do_all(self, line):
         instance_obj = storage.all()
         instance_list = []
-        
+
         if line == "" or line is None:
             for key, value in storage.all().items():
                 instance_list.append(str(value))
@@ -146,7 +146,8 @@ class HBNBCommand(cmd.Cmd):
 
         else:
             # it isn't a dictionary
-            checks = re.search(r"^(\w+)\s([\S]+?)\s\"(.+?)\"\,\s\"(.+?)\"", line)
+            checks = re.search(
+                r"^(\w+)\s([\S]+?)\s\"(.+?)\"\,\s\"(.+?)\"", line)
             class_name = checks.group(1)
             instance_id = checks.group(2)
             attribute = checks.group(3)
@@ -174,19 +175,20 @@ class HBNBCommand(cmd.Cmd):
                         attributes_dict = storage.attributes()[class_name]
                         # update attributes in the instance dictionary
                         # print(attributes_dict[attribute])
-                        value = attributes_dict[attribute](value) # type casting
+                        value = attributes_dict[attribute](
+                            value)  # type casting
                         # print(attribute, value)
                         setattr(instance_dict, attribute, value)
                         storage.save()
 
     def emptyline(self):
         pass
-    
+
     def precmd(self, line):
         # make the app work non-interactively
         if not sys.stdin.isatty():
             print()
-        
+
         checks = re.search(r"^(\w*)\.(\w+)(?:\(([^)]*)\))$", line)
         if checks:
             class_name = checks.group(1)
@@ -207,10 +209,10 @@ class HBNBCommand(cmd.Cmd):
                 else:
                     attribute_part = args_checks.group(2)
                     # print(attribute_part)
-                    line = f"{command} {class_name} {instance_id} {attribute_part}"
-                # return ''
+                    line = f"{command} {class_name} {instance_id} \
+{attribute_part}"
+                return ''
 
-                # print(line)
         return cmd.Cmd.precmd(self, line)
         # return ''
 
@@ -222,6 +224,7 @@ class HBNBCommand(cmd.Cmd):
             if line == class_name:
                 count += 1
         print(count)
+
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()

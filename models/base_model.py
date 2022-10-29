@@ -23,7 +23,8 @@ class BaseModel():
                 else:
                     # check and change the format for updated_at & created_at
                     if key == "updated_at" or key == "created_at":
-                        kwargs[key] = datetime.datetime.strptime(kwargs[key], "%Y-%m-%dT%H:%M:%S.%f")
+                        kwargs[key] = datetime.datetime.strptime(
+                            kwargs[key], "%Y-%m-%dT%H:%M:%S.%f")
                     # set the attributes of the instance
                     setattr(self, key, kwargs[key])
                 # self.key = kwargs[key]
@@ -31,7 +32,8 @@ class BaseModel():
 
     def __str__(self):
         '''Returns official string representation'''
-        return (f"[{self.__class__.__name__}] ({self.id}) {str(self.__dict__)}")
+        return (f"[{self.__class__.__name__}] ({self.id}) \
+{str(self.__dict__)}")
 
     def save(self):
         '''updates the public instance attribute updated_at'''
@@ -45,17 +47,7 @@ class BaseModel():
             if key not in ('created_at', 'updated_at'):
                 object_dict[key] = self.__dict__[key]
             else:
-                object_dict[key] = datetime.datetime.isoformat(self.__dict__[key])
+                object_dict[key] = datetime.datetime.isoformat(
+                    self.__dict__[key])
         object_dict['__class__'] = self.__class__.__name__
         return (object_dict)
-
-# dictionary = {'id': '391cd1f2-4d26-4845-8eff-8169b340e801', 'created_at': '2022-10-25T11:14:48.821221', 'updated_at': '2022-10-25T11:14:48.821234', 'name': 'My_First_Model', 'my_number': 89, '__class__': 'BaseModel'}
-# testInstance = BaseModel(**dictionary)
-# print(testInstance)
-
-
-# print(f"Time created: {testInstance.updated_at}")
-
-# testInstance.save()
-# print(testInstance.to_dict())
-# print(f"Time updated: {testInstance.updated_at}")

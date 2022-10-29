@@ -25,13 +25,6 @@ class FileStorage():
     def save(self):
         ''' serializes __objects to the JSON file (path: __file_path)'''
         # serialize the object by first converting it to a dictionary
-        # file_name = self.__file_path
-        # if os.path.exists(file_name):
-        #     with open(file_name, 'r+', encoding="utf-8") as my_file:
-        #         # get json data from file & convert to dictionary object
-        #         # object_dict = json.load(my_file)
-        #         object_dict = json.loads(my_file.read())
-        # else:
         object_dict = {}
 
         for key in self.__objects.keys():
@@ -42,23 +35,6 @@ class FileStorage():
         with open(file_name, "w", encoding="utf-8") as jsonfile:
             # json.dump(object_dict, jsonfile)
             jsonfile.write(json.dumps(object_dict))
-    
-    # def reload(self):
-    #     '''deserializes the JSON file to __objects'''
-    #     file_name = self.__file_path
-    #     if os.path.exists(file_name):
-    #         with open(file_name, 'r+', encoding="utf-8") as my_file:
-    #             # get json data from file & convert to dictionary object
-    #             # object_dict = json.load(my_file)
-    #             object_dict = json.loads(my_file.read())
-                
-    #             # delete class name from dictionary
-    #             for id, dictionary in object_dict.items():
-    #                 # class_name = dictionary['__class__']
-    #                 del dictionary['__class__']
-    #                 self.__objects[id] = dictionary
-    #             # print(self.__objects)
-
 
     def classes(self):
         """Returns a dictionary of valid classes and their references."""
